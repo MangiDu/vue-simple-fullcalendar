@@ -7,8 +7,9 @@
     <tr class="sfc-events" v-for="i in maxCount">
       <!-- events wrapper -->
       <template v-for="day in eventsWeek">
-        <td v-if="day.events[i - 1] && !day.events[i - 1].placehold" class="sfc-event-item" :colspan="day.events[i - 1].colspan">{{ day.events[i - 1].time }}<br/>{{ day.events[i - 1].content }}</td>
         <td v-if="!day.events[i - 1]"></td>
+        <template v-else-if="day.events[i - 1].placehold"></template>
+        <td v-else-if="day.events[i - 1]" class="sfc-event-item" :colspan="day.events[i - 1].colspan">{{ day.events[i - 1].time }}<br/>{{ day.events[i - 1].content }}</td>
       </template>
     </tr>
   </tbody>
@@ -44,6 +45,11 @@ export default {
                 content: eventItem.content,
                 colspan: durationDays
               }
+              let order = 0
+              for (let i = 0; i < day.events.length; i++) {
+                if (!day.events[i]) order = i
+              }
+              eventItem._order = order || day.events.length
             } else if (day.moment.isoWeekday() === 1) {
               let durationDays = getDurationsDays(day.moment.format('YYYY-MM-DD'), eventItem.endMoment.format('YYYY-MM-DD'))
               durationDays = durationDays >= 7 ? 7 : durationDays
@@ -52,12 +58,18 @@ export default {
                 content: eventItem.content,
                 colspan: durationDays
               }
+              let order = 0
+              for (let i = 0; i < day.events.length; i++) {
+                if (!day.events[i]) order = i
+              }
+              eventItem._order = order || day.events.length
             } else {
               event = {
                 placehold: true
               }
             }
-            day.events.push(event)
+            let order = eventItem._order || day.events.length
+            day.events[order] = event
           }
         })
         return day

@@ -152,7 +152,8 @@ $border = 1px solid #666
   .sfc-month-hint
     text-align: center
   .sfc-table
-    width: 100%
+    width: 800px
+    margin: auto
     table-layout: fixed
     border-collapse: collapse
     border-spacing: 0
@@ -176,6 +177,8 @@ $border = 1px solid #666
     .sfc-event-item
       border: $border
       background-color: #42b983
+      overflow: hidden
+      text-overflow: ellipsis
     td
       border-left: $border
       border-right: $border

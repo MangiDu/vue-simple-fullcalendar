@@ -22,6 +22,11 @@
 <script>
 import moment from 'moment'
 import simpleFullcalenadr from './components/simple-fullcalendar'
+
+const FORMATTER = 'YYYY-MM-DD'
+let TODAY = moment()
+let INVALID_PATTERN = /Invalid Date/i
+
 export default {
   name: 'app',
   components: {
@@ -35,11 +40,11 @@ export default {
         content: ''
       },
       events: [{
-        start: '2017-06-20',
-        end: '2017-06-21',
-        content: 'wow ~'
+        start: TODAY.format(FORMATTER),
+        end: TODAY.clone().add(1, 'day').format(FORMATTER),
+        content: 'wow ~~~'
       }],
-      today: moment().format('YYYY-MM-DD')
+      today: TODAY.format(FORMATTER)
     }
   },
   methods: {
@@ -49,14 +54,23 @@ export default {
       this.cache.content = ''
     },
     addEvent () {
-      let start = this.cache.start || this.today
-      let end = this.cache.end || this.today
-      let content = this.cache.content || 'default event content'
-      this.events.push({
-        start,
-        end,
-        content
-      })
+      try {
+        let start = moment(new Date(this.cache.start || this.today)).format(FORMATTER)
+        let end = moment(new Date(this.cache.end || this.today)).format(FORMATTER)
+        if (!INVALID_PATTERN.test(start) && !(INVALID_PATTERN.test(end))) {
+          let content = this.cache.content || 'default event content'
+          this.events.push({
+            start,
+            end,
+            content
+          })
+        } else {
+          let error = new Error('wrong date!')
+          throw error
+        }
+      } catch (err) {
+        alert('Got a wrong date!')
+      }
       this.clearCache()
     },
     removeEvent (index) {

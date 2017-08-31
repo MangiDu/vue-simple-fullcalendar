@@ -1,18 +1,33 @@
 <template lang="html">
-  <tbody class="sfc-table-body">
-    <tr class="sfc-date">
-      <!-- date -->
-      <td v-for="day in eventsWeek" :class="{'not-current-month': !day.moment.isSame(monthMoment, 'month')}">{{ day.date }}</td>
-    </tr>
-    <tr class="sfc-events" v-for="i in maxCount">
-      <!-- events wrapper -->
-      <template v-for="day in eventsWeek">
-        <td v-if="!day.events[i - 1]"></td>
-        <template v-else-if="day.events[i - 1].placehold"></template>
-        <td v-else-if="day.events[i - 1]" class="sfc-event-item" :colspan="day.events[i - 1].colspan">{{ day.events[i - 1].time }}<br/>{{ day.events[i - 1].content }}</td>
-      </template>
-    </tr>
-  </tbody>
+  <div class="sfc-table-wrapper">
+    <table class="sfc-table" :style="{'height': `${wrapperHeight}px`}">
+      <tbody class="sfc-table-bg">
+        <tr>
+          <td v-for="day in eventsWeek"></td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="sfc-table sfc-events-table" ref="eventsTable">
+      <tbody>
+        <tr class="sfc-date">
+          <!-- date -->
+          <td v-for="day in eventsWeek" :class="{'not-current-month': !day.moment.isSame(monthMoment, 'month')}">{{ day.date }}</td>
+        </tr>
+        <tr class="sfc-events" v-for="i in maxCount">
+          <!-- events wrapper -->
+          <template v-for="day in eventsWeek">
+            <td v-if="!day.events[i - 1]"></td>
+            <template v-else-if="day.events[i - 1].placehold"></template>
+            <td v-else-if="day.events[i - 1]" :colspan="day.events[i - 1].colspan">
+              <div class="sfc-event-item" :title="day.events[i - 1].content">
+                {{ day.events[i - 1].time }}<br/>{{ day.events[i - 1].content }}
+              </div>
+            </td>
+          </template>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script>
@@ -29,6 +44,11 @@ export default {
     events: {
       type: Array,
       default: []
+    }
+  },
+  data () {
+    return {
+      wrapperHeight: 0
     }
   },
   computed: {
@@ -78,6 +98,14 @@ export default {
     },
     maxCount () {
       return Math.max.apply(null, this.eventsWeek.map(day => day.events.length))
+    }
+  },
+  watch: {
+    eventsWeek () {
+      this.$nextTick(() => {
+        let height = this.$refs.eventsTable.clientHeight
+        this.wrapperHeight = height
+      })
     }
   }
 }

@@ -4,18 +4,18 @@
       <button @click="changeMonth('prev')">&lt;</button>
       <span>{{ monthText }}</span>
       <button @click="changeMonth('next')">&gt;</button>
-      <button @click="changeMonth('reset')">reset</button>
+      <button @click="changeMonth('reset')">today</button>
     </div>
-    <table class="sfc-table">
-      <thead class="sfc-table-head">
+    <table class="sfc-table sfc-table-head">
+      <thead>
         <tr>
           <td v-for="weekday in weekdays">{{ weekday }}</td>
         </tr>
       </thead>
-      <template v-for="week in weekArr">
-        <weekline :month-moment="monthMoment" :week="week" :events="tidyEvents"></weekline>
-      </template>
     </table>
+    <template v-for="week in weekArr">
+      <weekline :month-moment="monthMoment" :week="week" :events="tidyEvents"></weekline>
+    </template>
   </div>
 </template>
 
@@ -148,38 +148,65 @@ export default {
 
 <style lang="stylus">
 $border = 1px solid #666
+$eventBg = #3b91ad
+$eventColor = #fff
+$fontSize = 12px
+clearfix()
+  zoom: 1
+  height: auto
+  &:before,
+  &:after
+    content: " "
+    display: table
+
+  &:after
+    clear: both
+    visibility: hidden
+    font-size: 0
+    height: 0
+
 .sfc-wrapper
+  width: 800px
+  margin: auto
   .sfc-month-hint
     text-align: center
+  .sfc-table-wrapper
+    position: relative
+    margin-top: -1px
+    .sfc-events-table
+      position: absolute
+      top: 0
+      left: 0
   .sfc-table
-    width: 800px
-    margin: auto
+    width: 100%
     table-layout: fixed
-    border-collapse: collapse
     border-spacing: 0
+    border-collapse: collapse
+    .sfc-table-bg
+      td
+        border: $border
+        height: 80px
   .sfc-table-head
+    width: 100%
     text-align: center
-    background-color: #35495e
-    color: #fff
     td
       border: $border
-  .sfc-table-body
-    border: $border
   .sfc-date
     text-align: right
     font-size: 14px
     .not-current-month
       color: #aaa
-    td
-      border-left: $border
-      border-right: $border
   .sfc-events
     .sfc-event-item
+      margin: 1px 2px
+      padding: 2px
+      border-radius: 2px
       border: $border
-      background-color: #42b983
+      border-color: $eventBg
+      background-color: $eventBg
+      color: $eventColor
+      font-size: $fontSize
+      line-height: 1.2
       overflow: hidden
       text-overflow: ellipsis
-    td
-      border-left: $border
-      border-right: $border
 </style>

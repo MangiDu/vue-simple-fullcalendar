@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <h2>vue simple fullcalendar</h2>
+    <div class="header">
+      <h2>vue simple fullcalendar</h2>
+    </div>
     <simple-fullcalenadr :events="events"></simple-fullcalenadr>
     <div class="">
       <ul>
@@ -80,11 +82,12 @@ export default {
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-}
+<style lang="stylus">
+#app
+  font-family: 'Avenir', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  color: #2c3e50
+.header
+  text-align: center
 </style>

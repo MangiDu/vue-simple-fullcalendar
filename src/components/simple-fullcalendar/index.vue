@@ -1,10 +1,14 @@
 <template lang="html">
   <div class="sfc-wrapper">
     <div class="sfc-month-hint">
-      <button @click="changeMonth('prev')">&lt;</button>
-      <span>{{ monthText }}</span>
-      <button @click="changeMonth('next')">&gt;</button>
-      <button @click="changeMonth('reset')">today</button>
+      <div class="month-info">
+        <span class="sfc-button" @click="changeMonth('prev')">&lt;</span>
+        <span>{{ monthText }}</span>
+        <span class="sfc-button" @click="changeMonth('next')">&gt;</span>
+      </div>
+      <div class="operations">
+        <span class="sfc-button" @click="changeMonth('reset')">back to current month</span>
+      </div>
     </div>
     <table class="sfc-table sfc-table-head">
       <thead>
@@ -46,7 +50,7 @@ export default {
   data () {
     return {
       monthMoment: null,
-      weekdays: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+      weekdays: 'Monday_Tuesday_Wednesday_Thursday_Friday_Saturday_Sunday'.split('_'),
       weekArr: [],
       monthText: ''
     }
@@ -147,10 +151,11 @@ export default {
 </script>
 
 <style lang="stylus">
-$border = 1px solid #666
-$eventBg = #3b91ad
-$eventColor = #fff
+$gray = #666
+$cyan = #3b91ad
+$white = #fff
 $fontSize = 12px
+$border = 1px solid $gray
 clearfix()
   zoom: 1
   height: auto
@@ -165,11 +170,26 @@ clearfix()
     font-size: 0
     height: 0
 
+.sfc-button
+  display: inline-block
+  height: 24px
+  padding: 0 5px
+  border: $border
+  border-color: $cyan
+  color: $cyan
+  border-radius: 4px
+.sfc-month-hint
+  margin-bottom: 10px
+  text-align: center
+  clearfix()
+  .month-info
+    float: left
+  .operations
+    float: right
+
 .sfc-wrapper
   width: 800px
   margin: auto
-  .sfc-month-hint
-    text-align: center
   .sfc-table-wrapper
     position: relative
     margin-top: -1px
@@ -202,9 +222,9 @@ clearfix()
       padding: 2px
       border-radius: 2px
       border: $border
-      border-color: $eventBg
-      background-color: $eventBg
-      color: $eventColor
+      border-color: $cyan
+      background-color: $cyan
+      color: $white
       font-size: $fontSize
       line-height: 1.2
       overflow: hidden

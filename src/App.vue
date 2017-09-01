@@ -3,18 +3,13 @@
     <div class="header">
       <h2>vue simple fullcalendar</h2>
     </div>
-    <simple-fullcalenadr :events="events"></simple-fullcalenadr>
-    <div class="">
+    <simple-fullcalendar :events="events" @timeRangeSelected="addEvent2Events"></simple-fullcalendar>
+    <div class="events-list">
+      <p>* select in calendar to add event</p>
       <ul>
         <li v-for="(eventItem, index) in events">
           {{ eventItem.start }}~{{ eventItem.end }}: {{ eventItem.content }}
           <button type="button" name="button" @click="removeEvent(index)">x</button>
-        </li>
-        <li>
-          <label>start:</label><input type="text" name="start" v-model="cache.start">
-          <label>end:</label><input type="text" name="end" v-model="cache.end">
-          <label>content:</label><input type="text" name="content" v-model="cache.content">
-          <button type="button" name="button" @click="addEvent()">add</button>
         </li>
       </ul>
     </div>
@@ -23,16 +18,15 @@
 
 <script>
 import moment from 'moment'
-import simpleFullcalenadr from './components/simple-fullcalendar'
+import simpleFullcalendar from './components/simple-fullcalendar'
 
 const FORMATTER = 'YYYY-MM-DD'
 let TODAY = moment()
-let INVALID_PATTERN = /Invalid Date/i
 
 export default {
   name: 'app',
   components: {
-    simpleFullcalenadr
+    simpleFullcalendar
   },
   data () {
     return {
@@ -55,28 +49,16 @@ export default {
       this.cache.end = ''
       this.cache.content = ''
     },
-    addEvent () {
-      try {
-        let start = moment(new Date(this.cache.start || this.today)).format(FORMATTER)
-        let end = moment(new Date(this.cache.end || this.today)).format(FORMATTER)
-        if (!INVALID_PATTERN.test(start) && !(INVALID_PATTERN.test(end))) {
-          let content = this.cache.content || 'default event content'
-          this.events.push({
-            start,
-            end,
-            content
-          })
-        } else {
-          let error = new Error('wrong date!')
-          throw error
-        }
-      } catch (err) {
-        alert('Got a wrong date!')
-      }
-      this.clearCache()
-    },
     removeEvent (index) {
       this.events.splice(index, 1)
+    },
+    addEvent2Events (event) {
+      let content = window.prompt(`${event.start} ~ ${event.end}`)
+      if (content && content.length) {
+        this.events.push(Object.assign(event, {
+          content
+        }))
+      }
     }
   }
 }
@@ -90,4 +72,7 @@ export default {
   color: #2c3e50
 .header
   text-align: center
+.events-list
+  width: 800px
+  margin: 0 auto
 </style>

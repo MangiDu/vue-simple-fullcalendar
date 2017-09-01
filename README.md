@@ -1,4 +1,4 @@
-# vue-simple-fullcalendar
+# [WIP]vue-simple-fullcalendar
 
 > A simple month view of fullcalendar with vue2
 

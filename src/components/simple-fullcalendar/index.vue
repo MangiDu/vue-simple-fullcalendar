@@ -178,6 +178,10 @@ clearfix()
   border-color: $cyan
   color: $cyan
   border-radius: 4px
+  cursor: pointer
+  &:hover
+    color: darken($cyan, 50%)
+    border-color: @color
 .sfc-month-hint
   margin-bottom: 10px
   text-align: center

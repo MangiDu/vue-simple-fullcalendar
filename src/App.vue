@@ -39,6 +39,10 @@ export default {
         start: TODAY.format(FORMATTER),
         end: TODAY.clone().add(1, 'day').format(FORMATTER),
         content: 'wow ~~~'
+      }, {
+        start: TODAY.format(FORMATTER),
+        end: TODAY.clone().add(7, 'day').format(FORMATTER),
+        content: 'so nice a simple fullcalendar with vue2 ~~~'
       }],
       today: TODAY.format(FORMATTER)
     }

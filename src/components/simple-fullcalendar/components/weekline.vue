@@ -20,7 +20,7 @@
             <td v-if="!day.events[i - 1]"></td>
             <template v-else-if="day.events[i - 1].placehold"></template>
             <td v-else-if="day.events[i - 1]" :colspan="day.events[i - 1].colspan">
-              <div class="sfc-event-item" :title="day.events[i - 1].content">
+              <div class="sfc-event-item" :class="{'is-start': day.events[i - 1].isStart, 'is-end': day.events[i - 1].isEnd}" :title="day.events[i - 1].content">
                 {{ day.events[i - 1].time }}<br/>{{ day.events[i - 1].content }}
               </div>
             </td>
@@ -67,25 +67,44 @@ export default {
           if (day.moment.isBetween(eventItem.startMoment.clone().startOf('day'), eventItem.endMoment.clone().endOf('day'), null, '[]')) {
             let event
             if (eventItem.startMoment.isSame(day.moment, 'day')) {
-              let durationDays = (eventItem.durationDays + eventItem.startWeekday - 1) > 7 ? 7 - eventItem.startWeekday + 1 : eventItem.durationDays
+              // event start in current day, must have a start, maybe an end
+              let durationDays = eventItem.durationDays
+              let state = {
+                isStart: true,
+                isEnd: true
+              }
+              if ((eventItem.durationDays + eventItem.startWeekday - 1) > 7) {
+                durationDays = 7 - eventItem.startWeekday + 1
+                state.isEnd = false
+              }
               event = {
                 time: `${eventItem.startMoment.format('MM-DD')}~${eventItem.endMoment.format('MM-DD')}`,
                 content: eventItem.content,
                 colspan: durationDays
               }
+              Object.assign(event, state)
               let order = 0
               for (let i = 0; i < day.events.length; i++) {
                 if (!day.events[i]) order = i
               }
               eventItem._order = order || day.events.length
             } else if (day.moment.isoWeekday() === 1) {
+              // current day is monday, event began at least last week, not a start, maybe have an end
               let durationDays = getDurationsDays(day.moment.format('YYYY-MM-DD'), eventItem.endMoment.format('YYYY-MM-DD'))
-              durationDays = durationDays >= 7 ? 7 : durationDays
+              let state = {
+                isStart: false,
+                isEnd: true
+              }
+              if (durationDays > 7) {
+                durationDays = 7
+                state.isEnd = false
+              }
               event = {
                 time: `${eventItem.startMoment.format('MM-DD')}~${eventItem.endMoment.format('MM-DD')}`,
                 content: eventItem.content,
                 colspan: durationDays
               }
+              Object.assign(event, state)
               let order = 0
               for (let i = 0; i < day.events.length; i++) {
                 if (!day.events[i]) order = i
@@ -110,11 +129,11 @@ export default {
   },
   watch: {
     eventsWeek () {
-      this.$nextTick(() => {
-        let height = this.$refs.eventsTable.clientHeight
-        this.wrapperHeight = height
-      })
+      this.updateHeight()
     }
+  },
+  mounted () {
+    this.updateHeight()
   },
   methods: {
     recordDate (point, e) {
@@ -124,6 +143,12 @@ export default {
       this._recordTimer = setTimeout(() => {
         this.$emit('select', point, e)
       }, WAIT_TIME)
+    },
+    updateHeight () {
+      this.$nextTick(() => {
+        let height = this.$refs.eventsTable.clientHeight
+        this.wrapperHeight = height
+      })
     }
   }
 }

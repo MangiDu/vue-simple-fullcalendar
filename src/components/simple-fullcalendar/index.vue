@@ -275,9 +275,8 @@ clearfix()
       color: #aaa
   .sfc-events
     .sfc-event-item
-      margin: 1px 2px
+      margin: -1px 0 2px
       padding: 2px
-      border-radius: 2px
       border: $border
       border-color: $cyan
       background-color: $cyan
@@ -287,4 +286,12 @@ clearfix()
       overflow: hidden
       text-overflow: ellipsis
       pointer-events: auto
+      &.is-start
+        margin-left: 2px
+        border-top-left-radius: 2px
+        border-bottom-left-radius: 2px
+      &.is-end
+        margin-right: 2px
+        border-top-right-radius: 2px
+        border-bottom-right-radius: 2px
 </style>

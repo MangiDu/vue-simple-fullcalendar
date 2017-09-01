@@ -18,7 +18,7 @@
       </thead>
     </table>
     <template v-for="week in weekArr">
-      <weekline :month-moment="monthMoment" :week="week" :events="tidyEvents"></weekline>
+      <weekline :month-moment="monthMoment" :week="week" :events="tidyEvents" :highlight-time-range="selectedTimeRangeResult" @select="onSelect"></weekline>
     </template>
   </div>
 </template>
@@ -52,7 +52,12 @@ export default {
       monthMoment: null,
       weekdays: 'Monday_Tuesday_Wednesday_Thursday_Friday_Saturday_Sunday'.split('_'),
       weekArr: [],
-      monthText: ''
+      monthText: '',
+      selectedTimeRange: {
+        start: null,
+        between: null,
+        end: null
+      }
     }
   },
   computed: {
@@ -73,6 +78,14 @@ export default {
         return a.startTime - b.startTime
       })
       return events
+    },
+    selectedTimeRangeResult () {
+      let timeRange = this.selectedTimeRange
+      let start = timeRange.start
+      let end = timeRange.end || timeRange.between
+      if (start && end) {
+        return start > end ? [end, start] : [start, end]
+      } else return []
     }
   },
   beforeMount () {
@@ -145,6 +158,42 @@ export default {
     setMonthInfo () {
       this.weekArr = this.getMonthInfo()
       this.monthText = this.monthMoment.format('YYYY-MM')
+    },
+    onSelect (point, e) {
+      let el = e.target
+      let timeRange = this.selectedTimeRange
+      switch (point) {
+        case 'start':
+          timeRange.start = el.getAttribute('data-date')
+          timeRange.between = null
+          timeRange.end = null
+          break
+        case 'between':
+          if (timeRange.start) {
+            timeRange.between = el.getAttribute('data-date')
+          }
+          break
+        case 'end':
+          if (timeRange.start) {
+            timeRange.end = el.getAttribute('data-date')
+            this.addEvent(point === 'end')
+          }
+          break
+        default:
+      }
+    },
+    addEvent (isSelected) {
+      if (!isSelected) return
+      let [start, end] = this.selectedTimeRangeResult
+      this.$emit('timeRangeSelected', {
+        start,
+        end
+      })
+
+      let timeRange = this.selectedTimeRange
+      timeRange.start = null
+      timeRange.between = null
+      timeRange.end = null
     }
   }
 }
@@ -201,15 +250,19 @@ clearfix()
       position: absolute
       top: 0
       left: 0
+      pointer-events: none
   .sfc-table
     width: 100%
     table-layout: fixed
     border-spacing: 0
     border-collapse: collapse
+    user-select: none
     .sfc-table-bg
       td
         border: $border
         height: 80px
+        &.highlight
+          background-color: rgba(59, 143, 173, .1)
   .sfc-table-head
     width: 100%
     text-align: center
@@ -233,4 +286,5 @@ clearfix()
       line-height: 1.2
       overflow: hidden
       text-overflow: ellipsis
+      pointer-events: auto
 </style>

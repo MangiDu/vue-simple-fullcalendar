@@ -3,7 +3,8 @@
     <table class="sfc-table" :style="{'height': `${wrapperHeight}px`}">
       <tbody class="sfc-table-bg">
         <tr>
-          <td v-for="day in eventsWeek"></td>
+          <td v-for="day in eventsWeek" :class="{'highlight': day.moment.isBetween(...highlightTimeRange, 'day', '[]')}" :data-date="day.dateText" @mousedown="recordDate('start', $event)" @mouseup="recordDate('end', $event)" @mouseover="recordDate('between', $event)">
+          </td>
         </tr>
       </tbody>
     </table>
@@ -32,6 +33,8 @@
 
 <script>
 import { getDurationsDays } from '../util.js'
+
+const WAIT_TIME = 100
 export default {
   props: {
     monthMoment: {
@@ -42,6 +45,10 @@ export default {
       required: true
     },
     events: {
+      type: Array,
+      default: []
+    },
+    highlightTimeRange: {
       type: Array,
       default: []
     }
@@ -55,6 +62,7 @@ export default {
     eventsWeek () {
       let week = this.week.map((day) => {
         day.events = []
+        day.dateText = day.moment.format('YYYY-MM-DD')
         this.events.forEach(function (eventItem, eventIndex) {
           if (day.moment.isBetween(eventItem.startMoment.clone().startOf('day'), eventItem.endMoment.clone().endOf('day'), null, '[]')) {
             let event
@@ -106,6 +114,16 @@ export default {
         let height = this.$refs.eventsTable.clientHeight
         this.wrapperHeight = height
       })
+    }
+  },
+  methods: {
+    recordDate (point, e) {
+      if (this._recordTimer) {
+        clearTimeout(this._recordTimer)
+      }
+      this._recordTimer = setTimeout(() => {
+        this.$emit('select', point, e)
+      }, WAIT_TIME)
     }
   }
 }
